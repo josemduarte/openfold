@@ -445,7 +445,10 @@ def to_modelcif(prot: Protein) -> str:
     # adding 1 entity per unique sequence
     entities_map = {}
     for key, value in unique_seqs.items():
-        model_e = modelcif.Entity(key, description='Model subunit')
+        # Entity constructor does not understand X, it needs PDB-style canonical sequence,
+        # see https://github.com/ihmwg/ModelCIF/issues/13
+        can_sequence = ['UNK' if x == 'X' else x for x in key]
+        model_e = modelcif.Entity(can_sequence, description='Model subunit')
         for chain_idx in value:
             entities_map[chain_idx] = model_e
 
